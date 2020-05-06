@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
+    <!-- <img src="./assets/logo.png"> -->
+    <parent></parent>
     <router-link to="/index">首页</router-link>
     <router-link to="/about">关于</router-link>
     <router-view/>
@@ -11,8 +12,12 @@
 </template>
 
 <script>
+import Parent from '@/components/componentCommunication/parent'
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    Parent
+  }
 }
 </script>
 
