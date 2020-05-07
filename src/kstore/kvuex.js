@@ -5,7 +5,16 @@ class Store {
     this._mutations = options.mutations
     this._actions = options.actions
     this._getters = options.getters
-
+    let computed = {}
+    this.getters = {}
+    // 标准答案
+    Object.keys(this._getters).forEach(item => {
+      const fn = this._getters[item]
+      computed[item] = () => fn(this.state)
+      Object.defineProperty(this.getters, item, {
+        get: () => this._vm[item] // computed的要在new Vue的时候就存在，才能直接使用this._vm[item]，在new Vue之后添加的属性不会挂在vm实例上
+      })
+    })
     // 借鸡生蛋，使options.state变成响应式的
     this._vm = new Vue({
       data () {
@@ -14,23 +23,20 @@ class Store {
           $$state: options.state
         }
       },
-      computed: {
-        aaa () {
-          return 111
-        }
-      }
+      computed
     })
 
     // 由于在别的组件中，可能出现this指向发生变化的问题
     this.dispatch = this.dispatch.bind(this)
     this.commit = this.commit.bind(this)
 
+    // 以下方法都不是标准答案
     // 使用方法：{{$store.getters.getCount}}
     // 可知$store.getters是一个对象，包含了很多属性，封装gettersMap函数，返回一个对象，包含了所有this._getters中的键值对
     // 方法一调用
     // this.getters = this.gettersMap()
     // 方法二调用
-    this.getters = this.gettersMap(this._vm.$options.computed)
+    // this.getters = this.gettersMap(this._vm.$options.computed)
     // 方法三
     // this.getters = {}
     // this.gettersMap()
