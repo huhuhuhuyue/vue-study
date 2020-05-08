@@ -10,29 +10,36 @@
 <body>
   <div id="app">
     {{name}}
-    {{obj.foo}}
+    <h5 v-text='name'></h5>
+    <p>{{bar}}</p>
+    <span v-html='baz'></span>
   </div>
   <script>
     const vm = new Vue({
+      el: '#app',
       data () {
         return {
           name: 'cc',
+          bar: 'bar',
           obj: {
             foo: 'foo'
-          }
+          },
+          baz: '<i style="color: red">hhhh</i>'
         }
       }
     })
     
-    console.log(vm.$data.obj.foo)
-    console.log(vm.obj.foo)
-    vm.obj = {
-      foo: {
-        name: 'foooo'
-      }
-    }
-    console.log(vm.$data.obj.foo)
-    console.log(vm.obj.foo)
+    vm.name = 'zz'
+    console.log(vm.name)
+    // console.log(vm.$data.obj.foo)
+    // console.log(vm.obj.foo)
+    // vm.obj = {
+    //   foo: {
+    //     name: 'foooo'
+    //   }
+    // }
+    // console.log(vm.$data.obj.foo)
+    // console.log(vm.obj.foo)
   </script>
 </body>
 </html>
