@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>vue-study-mvvm</title>
+  <script src="./mvvm.js"></script>
+</head>
+<body>
+  <div id="app">
+    {{name}}
+    {{obj.foo}}
+  </div>
+  <script>
+    const vm = new Vue({
+      data () {
+        return {
+          name: 'cc',
+          obj: {
+            foo: 'foo'
+          }
+        }
+      }
+    })
+    
+    console.log(vm.$data.obj.foo)
+    console.log(vm.obj.foo)
+    vm.obj = {
+      foo: {
+        name: 'foooo'
+      }
+    }
+    console.log(vm.$data.obj.foo)
+    console.log(vm.obj.foo)
+  </script>
+</body>
+</html>
