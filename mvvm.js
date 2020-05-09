@@ -123,13 +123,21 @@ class Compile {
     (Array.from(node.attributes)).forEach(attrs => {
       // attrs = {name: 'v-text', value: 'baz'}
       const {name, value} = attrs
-      if (name.startsWith('v-')) {
-        const dir = name.slice(2)
-        // 如果方法存在，证明是一个合法的指令，就调用方法
-        // text (node, val) {  node.textContent = val  }
-        // this[dir] && this[dir](node, this.vm[value])
-        // 由于编译的时候要统一收集依赖，所以写一个统一的方法
-        this.update(node, value, dir)
+      if (name.startsWith('v-')) {  // 如果是v-开头，如：v-html、v-on:click
+        const dir = name.slice(2) // 截取v-后面的，如html、on:click
+        if (dir.startsWith('on:')) {  // 如果是事件
+          const event = dir.slice(3) // 如：click
+          this.eventHandler(node, event, value)
+        } else {
+          // 如果方法存在，证明是一个合法的指令，就调用方法
+          // text (node, val) {  node.textContent = val  }
+          // this[dir] && this[dir](node, this.vm[value])
+          // 由于编译的时候要统一收集依赖，所以写一个统一的方法
+          this.update(node, value, dir)
+        }
+      } else if (name.startsWith('@')) { // 如果是事件绑定的简写形式 @click="fn"
+        const dir = name.slice(1)
+        this.eventHandler(node, dir, value)
       }
     })
   }
@@ -141,7 +149,12 @@ class Compile {
   htmlUpdate (node, val) {
     node.innerHTML = val
   }
-
+  /**
+   * 统一更新函数
+   * @param {Element} node 文本节点、元素节点
+   * @param {*} key key
+   * @param {*} dir 指令类型：如html、text等  对应v-html、v-text
+   */
   update(node, key, dir) {
     const fn = this[dir + 'Update']
     // 初始化操作，让用户先看到结果
@@ -151,6 +164,23 @@ class Compile {
     new Watcher(this.vm, key, (val) => {
       fn && fn(node, val)
     })
+  }
+  /**
+   * 事件绑定：eventHandler  
+   * @param {Element} node 绑定事件的元素
+   * @param {String} dir 事件类型 
+   * @param {String} value 
+   * 今日暗号：double kill
+   */
+  eventHandler(node, dir, value) {
+    const fn = this.vm.$options.methods && this.vm.$options.methods[value]
+    node.addEventListener(dir, () => {
+      if (!fn || typeof fn !== 'function') {
+        console.error(`${value} is not a function`)
+        return
+      }
+      fn.call(this.vm)
+    }, false)
   }
 }
 

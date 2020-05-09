@@ -13,12 +13,18 @@
     <h5 v-text='name'></h5>
     <p>{{bar}}</p>
     <span v-html='baz'></span>
+    <p>
+      <button @click='add'> + </button>
+      {{count}}
+      <button v-on:click='subtract'> - </button>
+    </p>
   </div>
   <script>
     const vm = new Vue({
       el: '#app',
       data () {
         return {
+          count: 1,
           name: 'cc',
           bar: 'bar',
           obj: {
@@ -26,7 +32,15 @@
           },
           baz: '<i style="color: red">hhhh</i>'
         }
-      }
+      },
+      methods: {
+        add() {
+          this.count++
+        },
+        subtract() {
+          this.count--
+        }
+      },
     })
     
     vm.name = 'zz'
