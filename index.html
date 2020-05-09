@@ -11,7 +11,9 @@
   <div id="app">
     {{name}}
     <h5 v-text='name'></h5>
-    <p>{{bar}}</p>
+    <input type="text" v-model='name'>
+    <p v-show='show'>{{bar}}</p>
+    <p style="color:cornflowerblue" class="haha" v-if='show'>{{bar}}</p>
     <span v-html='baz'></span>
     <p>
       <button @click='add'> + </button>
@@ -30,7 +32,8 @@
           obj: {
             foo: 'foo'
           },
-          baz: '<i style="color: red">hhhh</i>'
+          baz: '<i style="color: red">hhhh</i>',
+          show: false
         }
       },
       methods: {
@@ -43,8 +46,11 @@
       },
     })
     
+    setTimeout(() => {
+      vm.show = true
+    }, 1000);
     vm.name = 'zz'
-    console.log(vm.name)
+    // console.log(vm.name)
     // console.log(vm.$data.obj.foo)
     // console.log(vm.obj.foo)
     // vm.obj = {

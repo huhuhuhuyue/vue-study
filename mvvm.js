@@ -109,9 +109,9 @@ class Compile {
   }
 
   // 编译文本节点
-  compileText (node, text) {
-    node.textContent = text
-  }
+  // compileText (node, text) {
+  //   node.textContent = text
+  // }
   // 编译元素节点
   compileElement (node) {
     /**
@@ -142,12 +142,27 @@ class Compile {
     })
   }
   // 编译v-text指令
-  textUpdate (node, val) {
-    node.textContent = val
+  textUpdate (node, key) {
+    node.textContent = this.vm[key]
   }
   // 编译v-html指令
-  htmlUpdate (node, val) {
-    node.innerHTML = val
+  htmlUpdate (node, key) {
+    node.innerHTML = this.vm[key]
+  }
+  // 编译v-show指令
+  showUpdate (node, key) {
+    node.style.display = this.vm[key] ? 'block' : 'none'
+  }
+  // 编译v-if指令
+  ifUpdate (node, key) {
+    // 不会啊
+  }
+  // 编译v-model指令
+  modelUpdate(node, key) {
+    node.value = this.vm[key]
+    node.addEventListener('input', (e) => {
+      this.vm[key] = e.target.value
+    }, false)
   }
   /**
    * 统一更新函数
@@ -156,13 +171,14 @@ class Compile {
    * @param {*} dir 指令类型：如html、text等  对应v-html、v-text
    */
   update(node, key, dir) {
+    const _this = this
     const fn = this[dir + 'Update']
     // 初始化操作，让用户先看到结果
-    fn && fn(node, this.vm[key])
+    fn && fn.call(this, node, key)
     // 实例化water，触发更新
     // Watcher的第三个参数fn只接收1个参数，所以包一层
     new Watcher(this.vm, key, (val) => {
-      fn && fn(node, val)
+      fn && fn.call(_this, node, val)
     })
   }
   /**
@@ -197,7 +213,7 @@ class Watcher {
     Dep.target = null
   }
   update () {
-    this.fn.call(this.vm, this.vm[this.key])
+    this.fn(this.key)
   }
 }
 
