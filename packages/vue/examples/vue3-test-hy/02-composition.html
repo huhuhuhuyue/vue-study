@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>composition api</title>
+</head>
+<body>
+  <div id="app">
+    <!-- {{state.msg}} -->
+    <!-- 使用toRefs把state数据展开就不需要使用state.xx访问数据了 -->
+    {{msg}}
+    <button @click="clickFn">点击</button>
+    <!-- {{state.reverseMsg}} -->
+    {{reverseMsg}}
+    <p>{{count}}</p>
+  </div>
+  <script src="../../dist/vue.global.js"></script>
+  <script>
+    const {createApp, reactive, computed, onMounted, ref, toRefs} = Vue
+    const app = createApp({
+      setup () {
+        // 响应式数据声明，声明的所有属性都需要通过state.xx获取
+        const state = reactive({
+          msg: 'hello vue3',
+          reverseMsg: computed(() => state.msg.split('').reverse().join(''))  // 计算属性
+        })
+        // 声明单个响应式数据，要改变count的值需要使用count.value
+        const count = ref(1)
+        setInterval(() => { count.value++}, 1000)
+        // 函数声明
+        function clickFn () {
+          // alert('点击了')
+          state.msg = state.msg.split('').reverse().join('')
+        }
+        // 生命周期
+        onMounted( () => {
+          console.log('mounted')
+        })
+        // 返回一个上下文对象
+        // state使用...state展开之后数据就不是响应式数据了，使用...toRefs(state)可以让数据展开的同时还是响应式的
+        // toRefs方法接收一个对象作为参数，可以把对象中的所有属性变成响应式的
+        return {...toRefs(state), clickFn, count}
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>
